@@ -1,17 +1,12 @@
 package com.controllers;
 
+import com.operation.OperationHttpClient;
+import com.operation.ReturnObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
-import java.io.StringWriter;
-import java.util.Random;
 
 import static java.lang.String.format;
 
@@ -22,22 +17,11 @@ public class DeleteProxyHandler implements HttpHandler {
         LOGGER.info(format("[PROXY] --> Somebody access services: remote address = %s, request method = %s, request uri = %s",
                 httpExchange.getRemoteAddress(), httpExchange.getRequestMethod(), httpExchange.getRequestURI()));
         try {
-            String url = format("http://localhost:%d/employee/delete", (9000 + new Random().nextInt(2)));
-            CloseableHttpClient client = HttpClients.createDefault();
-            HttpPut httpPost = new HttpPut(url);
-            httpPost.setHeader("firstname", httpExchange.getRequestHeaders().get("firstname").get(0));
-            CloseableHttpResponse closeableHttpResponse = client.execute(httpPost);
+            ReturnObject returnObject = new OperationHttpClient().delete(httpExchange.getRequestHeaders().get("firstname").get(0));
 
-            StringWriter writer = new StringWriter();
-            IOUtils.copy(closeableHttpResponse.getEntity().getContent(), writer, "UTF-8");
-            String response = writer.toString();
-
-            client.close();
-
-            int status = closeableHttpResponse.getStatusLine().getStatusCode();
-            httpExchange.sendResponseHeaders(status, response.length());
+            httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
             OutputStream os = httpExchange.getResponseBody();
-            os.write(response.getBytes());
+            os.write(returnObject.getRns().getBytes());
             os.close();
         } catch (Exception ex) {
             ex.printStackTrace();

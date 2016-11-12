@@ -1,21 +1,17 @@
 package com.controllers;
 
 import com.model.Empl;
+import com.operation.OperationHttpClient;
+import com.operation.ReturnObject;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.util.JSONUtil;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
-import java.util.Random;
 
 import static java.lang.String.format;
 
@@ -33,26 +29,11 @@ public class PostProxyHandler implements HttpHandler {
 
             Empl empl = (Empl) JSONUtil.getJAVAObjectfromJSONString(requestBody, Empl.class);
 
+            ReturnObject returnObject = new OperationHttpClient().insertOne(empl, requestBody);
 
-            String url = format("http://localhost:%d/employee/post", (9000 + new Random().nextInt(2)));
-            CloseableHttpClient client = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(url);
-            StringEntity entity = new StringEntity(requestBody);
-            httpPost.setEntity(entity);
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-            CloseableHttpResponse closeableHttpResponse = client.execute(httpPost);
-
-            writer = new StringWriter();
-            IOUtils.copy(closeableHttpResponse.getEntity().getContent(), writer, "UTF-8");
-            String response = writer.toString();
-
-            client.close();
-
-            int status = closeableHttpResponse.getStatusLine().getStatusCode();
-            httpExchange.sendResponseHeaders(status, response.length());
+            httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
             OutputStream os = httpExchange.getResponseBody();
-            os.write(response.getBytes());
+            os.write(returnObject.getRns().getBytes());
             os.close();
         } catch (Exception ex) {
             ex.printStackTrace();
