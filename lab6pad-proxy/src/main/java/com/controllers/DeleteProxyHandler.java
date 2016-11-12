@@ -19,22 +19,23 @@ public class DeleteProxyHandler implements HttpHandler {
         try {
             ReturnObject returnObject = new OperationHttpClient().delete(httpExchange.getRequestHeaders().get("firstname").get(0));
 
-            httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(returnObject.getRns().getBytes());
-            os.close();
+            sendRNS(httpExchange,returnObject);
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                String msg = "SERVER ERROR";
-                httpExchange.sendResponseHeaders(500, msg.length());
-                OutputStream os = httpExchange.getResponseBody();
-                os.write(msg.getBytes(), 0, msg.length());
-                os.close();
+                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
     }
+
+    private void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
+        httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
+        OutputStream os = httpExchange.getResponseBody();
+        os.write(returnObject.getRns().getBytes());
+        os.close();
+    }
+
 }

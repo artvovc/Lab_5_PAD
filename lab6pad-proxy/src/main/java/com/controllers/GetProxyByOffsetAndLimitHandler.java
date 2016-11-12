@@ -51,11 +51,7 @@ public class GetProxyByOffsetAndLimitHandler implements HttpHandler {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                String msg = "SERVER ERROR";
-                httpExchange.sendResponseHeaders(500, msg.length());
-                OutputStream os = httpExchange.getResponseBody();
-                os.write(msg.getBytes(), 0, msg.length());
-                os.close();
+                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
