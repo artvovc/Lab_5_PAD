@@ -1,5 +1,6 @@
 package com.controllers;
 
+import com.Clients;
 import com.model.Empl;
 import com.operation.OperationHttpClient;
 import com.operation.ReturnObject;
@@ -20,6 +21,10 @@ public class PutProxyHandler extends AbstractProxyController implements HttpHand
     public void handle(HttpExchange httpExchange) {
         LOGGER.info(format("[PROXY] --> Somebody access services: remote address = %s, request method = %s, request uri = %s",
                 httpExchange.getRemoteAddress(), httpExchange.getRequestMethod(), httpExchange.getRequestURI()));
+        while (Clients.getInstance().getHttpExchanges().size() == Clients.getInstance().getLIMIT()) {
+            System.out.println("SOMEBODY WAIT");
+        }
+        Clients.getInstance().getHttpExchanges().add(httpExchange);
         try {
             InputStream is = httpExchange.getRequestBody();
             StringWriter writer = new StringWriter();
@@ -39,6 +44,8 @@ public class PutProxyHandler extends AbstractProxyController implements HttpHand
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
+        } finally {
+            Clients.getInstance().getHttpExchanges().remove(httpExchange);
         }
     }
 }

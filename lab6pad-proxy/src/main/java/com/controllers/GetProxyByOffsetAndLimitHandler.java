@@ -1,5 +1,6 @@
 package com.controllers;
 
+import com.Clients;
 import com.operation.OperationHttpClient;
 import com.operation.ReturnObject;
 import com.sun.net.httpserver.Headers;
@@ -21,6 +22,10 @@ public class GetProxyByOffsetAndLimitHandler extends AbstractProxyController imp
     public void handle(HttpExchange httpExchange) {
         LOGGER.info(format("[PROXY] --> Somebody access services: remote address = %s, request method = %s, request uri = %s",
                 httpExchange.getRemoteAddress(), httpExchange.getRequestMethod(), httpExchange.getRequestURI()));
+        while (Clients.getInstance().getHttpExchanges().size() == Clients.getInstance().getLIMIT()) {
+            System.out.println("SOMEBODY WAIT");
+        }
+        Clients.getInstance().getHttpExchanges().add(httpExchange);
         try {
             Headers h = httpExchange.getResponseHeaders();
             h.add("Content-Type", "application/json");
@@ -54,6 +59,8 @@ public class GetProxyByOffsetAndLimitHandler extends AbstractProxyController imp
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
+        } finally {
+            Clients.getInstance().getHttpExchanges().remove(httpExchange);
         }
     }
 }
