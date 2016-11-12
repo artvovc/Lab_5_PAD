@@ -5,7 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 
 import java.io.OutputStream;
 
-abstract class AbstractServerController {
+abstract class AbstractProxyController {
     void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
         httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
         OutputStream os = httpExchange.getResponseBody();

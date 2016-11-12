@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 
 import static java.lang.String.format;
 
-public class DeleteProxyHandler extends AbstractServerController implements HttpHandler {
+public class DeleteProxyHandler extends AbstractProxyController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PostProxyHandler.class);
 
     public void handle(HttpExchange httpExchange) {

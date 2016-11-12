@@ -14,7 +14,7 @@ import java.io.StringWriter;
 
 import static java.lang.String.format;
 
-public class PostProxyHandler extends AbstractServerController implements HttpHandler {
+public class PostProxyHandler extends AbstractProxyController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PostProxyHandler.class);
 
     public void handle(HttpExchange httpExchange) {

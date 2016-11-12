@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class GetProxyByOffsetAndLimitHandler extends AbstractServerController implements HttpHandler {
+public class GetProxyByOffsetAndLimitHandler extends AbstractProxyController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(GetProxyByOffsetAndLimitHandler.class);
 
     private static ReturnObject rns = new ReturnObject(500, "SERVER ERROR");

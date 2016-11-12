@@ -14,7 +14,7 @@ import java.io.StringWriter;
 
 import static java.lang.String.format;
 
-public class PutProxyHandler extends AbstractServerController implements HttpHandler {
+public class PutProxyHandler extends AbstractProxyController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PutProxyHandler.class);
 
     public void handle(HttpExchange httpExchange) {

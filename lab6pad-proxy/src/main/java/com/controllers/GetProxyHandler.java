@@ -11,7 +11,7 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class GetProxyHandler extends AbstractServerController implements HttpHandler {
+public class GetProxyHandler extends AbstractProxyController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(GetProxyHandler.class);
 
     private static ReturnObject rns = new ReturnObject(500, "SERVER ERROR");
