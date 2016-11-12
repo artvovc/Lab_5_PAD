@@ -21,6 +21,7 @@ public class CustomHttpServer {
         server.createContext("/employee/put", new PutHandler());
         server.createContext("/employee/delete", new DeleteHandler());
         server.createContext("/employee", new GetByOffsetAndLimitHandler());
+        server.createContext("/status", new StatusHandler());
         server.setExecutor(null);
         server.start();
         LOGGER.info(format("[SERVER] --> WAS STARTED SERVER ON PORT %d",PORT));

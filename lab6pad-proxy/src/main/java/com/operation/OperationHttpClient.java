@@ -11,6 +11,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.Random;
@@ -19,9 +20,43 @@ import static java.lang.String.format;
 
 public class OperationHttpClient {
 
-    public ReturnObject insertOne(Empl empl, String requestBody) throws Exception {
+    private static int PORT = 9000;
 
-        String url = format("http://localhost:%d/employee/post", (9000 + new Random().nextInt(2)));
+    public OperationHttpClient() {
+        boolean server_9000 = false;
+        boolean server_9001 = false;
+        PORT = 9000;
+        String url = format("http://localhost:%d/status", PORT);
+        CloseableHttpClient client = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(url);
+        try {
+            CloseableHttpResponse closeableHttpResponse = client.execute(httpGet);
+            server_9000 = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        PORT = 9001;
+        url = format("http://localhost:%d/status", PORT);
+        client = HttpClients.createDefault();
+        httpGet = new HttpGet(url);
+        try {
+            CloseableHttpResponse closeableHttpResponse = client.execute(httpGet);
+            server_9001 = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (server_9000 && server_9001)
+            PORT = 9000 + new Random().nextInt(2);
+        else if (server_9000)
+            PORT = 9000;
+        else if (server_9001)
+            PORT = 9001;
+        else PORT = 0;
+    }
+
+    public ReturnObject insertOne(Empl empl, String requestBody) throws Exception {
+        if (PORT == 0) return new ReturnObject(500, "SERVER ERROR");
+        String url = format("http://localhost:%d/employee/post", PORT);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         StringEntity entity = new StringEntity(requestBody);
@@ -42,7 +77,8 @@ public class OperationHttpClient {
     }
 
     public ReturnObject findOneAndReplace(HttpExchange httpExchange, Empl empl, String requestBody) throws Exception {
-        String url = format("http://localhost:%d/employee/put", (9000 + new Random().nextInt(2)));
+        if (PORT == 0) return new ReturnObject(500, "SERVER ERROR");
+        String url = format("http://localhost:%d/employee/put", PORT);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPut httpPost = new HttpPut(url);
         StringEntity entity = new StringEntity(requestBody);
@@ -64,8 +100,8 @@ public class OperationHttpClient {
     }
 
     public ReturnObject delete(String firstname) throws Exception {
-
-        String url = format("http://localhost:%d/employee/delete", (9000 + new Random().nextInt(2)));
+        if (PORT == 0) return new ReturnObject(500, "SERVER ERROR");
+        String url = format("http://localhost:%d/employee/delete", PORT);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpPut httpPost = new HttpPut(url);
         httpPost.setHeader("firstname", firstname);
@@ -83,7 +119,8 @@ public class OperationHttpClient {
     }
 
     public ReturnObject find() throws Exception {
-        String url = format("http://localhost:%d/employee/get", (9000 + new Random().nextInt(2)));
+        if (PORT == 0) return new ReturnObject(500, "SERVER ERROR");
+        String url = format("http://localhost:%d/employee/get", PORT);
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Accept", "application/json");
@@ -102,9 +139,8 @@ public class OperationHttpClient {
     }
 
     public ReturnObject findOffsetLimit(Map<String, Integer> values, HttpExchange httpExchange) throws Exception {
-
-        String url = format("http://localhost:%d/employee?%s", (9000 + new Random().nextInt(2)),
-                httpExchange.getRequestURI().getQuery());
+        if (PORT == 0) return new ReturnObject(500, "SERVER ERROR");
+        String url = format("http://localhost:%d/employee?%s", PORT, httpExchange.getRequestURI().getQuery());
         CloseableHttpClient client = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setHeader("Accept", "application/json");
