@@ -6,11 +6,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.apache.log4j.Logger;
 
-import java.io.OutputStream;
-
 import static java.lang.String.format;
 
-public class DeleteProxyHandler implements HttpHandler {
+public class DeleteProxyHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PostProxyHandler.class);
 
     public void handle(HttpExchange httpExchange) {
@@ -19,23 +17,15 @@ public class DeleteProxyHandler implements HttpHandler {
         try {
             ReturnObject returnObject = new OperationHttpClient().delete(httpExchange.getRequestHeaders().get("firstname").get(0));
 
-            sendRNS(httpExchange,returnObject);
+            sendRNS(httpExchange, returnObject);
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
+                sendRNS(httpExchange, new ReturnObject(500, "SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
     }
-
-    private void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
-        httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(returnObject.getRns().getBytes());
-        os.close();
-    }
-
 }

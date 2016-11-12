@@ -7,17 +7,16 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.apache.log4j.Logger;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class GetProxyByOffsetAndLimitHandler implements HttpHandler {
+public class GetProxyByOffsetAndLimitHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(GetProxyByOffsetAndLimitHandler.class);
 
-    private static ReturnObject rns = new ReturnObject(500,"SERVER ERROR");
+    private static ReturnObject rns = new ReturnObject(500, "SERVER ERROR");
 
     public void handle(HttpExchange httpExchange) {
         LOGGER.info(format("[PROXY] --> Somebody access services: remote address = %s, request method = %s, request uri = %s",
@@ -43,7 +42,7 @@ public class GetProxyByOffsetAndLimitHandler implements HttpHandler {
                 rns = new ReturnObject(returnObject.getStatus(), returnObject.getRns());
                 h.add("FromProxy", "no");
                 sendRNS(httpExchange, returnObject);
-            } else{
+            } else {
                 h.add("FromProxy", "yes");
                 sendRNS(httpExchange, rns);
             }
@@ -51,19 +50,11 @@ public class GetProxyByOffsetAndLimitHandler implements HttpHandler {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
+                sendRNS(httpExchange, new ReturnObject(500, "SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
     }
-
-    private void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
-        httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(returnObject.getRns().getBytes());
-        os.close();
-    }
-
 }
 

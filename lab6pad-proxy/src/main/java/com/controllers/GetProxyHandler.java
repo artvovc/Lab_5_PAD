@@ -7,15 +7,14 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.apache.log4j.Logger;
 
-import java.io.OutputStream;
 import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class GetProxyHandler implements HttpHandler {
+public class GetProxyHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(GetProxyHandler.class);
 
-    private static ReturnObject rns = new ReturnObject(500,"SERVER ERROR");
+    private static ReturnObject rns = new ReturnObject(500, "SERVER ERROR");
 
     public void handle(HttpExchange httpExchange) {
         LOGGER.info(format("[PROXY] --> Somebody access services: remote address = %s, request method = %s, request uri = %s",
@@ -30,7 +29,7 @@ public class GetProxyHandler implements HttpHandler {
                 rns = new ReturnObject(returnObject.getStatus(), returnObject.getRns());
                 h.add("FromProxy", "no");
                 sendRNS(httpExchange, returnObject);
-            } else{
+            } else {
                 h.add("FromProxy", "yes");
                 sendRNS(httpExchange, rns);
             }
@@ -38,18 +37,11 @@ public class GetProxyHandler implements HttpHandler {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
+                sendRNS(httpExchange, new ReturnObject(500, "SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
 
-    }
-
-    private void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
-        httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(returnObject.getRns().getBytes());
-        os.close();
     }
 }

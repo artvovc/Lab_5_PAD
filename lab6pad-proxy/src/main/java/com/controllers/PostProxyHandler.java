@@ -10,12 +10,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 
 import static java.lang.String.format;
 
-public class PostProxyHandler implements HttpHandler {
+public class PostProxyHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PostProxyHandler.class);
 
     public void handle(HttpExchange httpExchange) {
@@ -31,21 +30,15 @@ public class PostProxyHandler implements HttpHandler {
 
             ReturnObject returnObject = new OperationHttpClient().insertOne(empl, requestBody);
 
-            sendRNS(httpExchange,returnObject);
+            sendRNS(httpExchange, returnObject);
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                sendRNS(httpExchange,new ReturnObject(500,"SERVER ERROR"));
+                sendRNS(httpExchange, new ReturnObject(500, "SERVER ERROR"));
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
-    }
-    private void sendRNS(HttpExchange httpExchange, ReturnObject returnObject) throws Exception {
-        httpExchange.sendResponseHeaders(returnObject.getStatus(), returnObject.getRns().length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(returnObject.getRns().getBytes());
-        os.close();
     }
 }
