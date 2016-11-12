@@ -5,11 +5,9 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.apache.log4j.Logger;
 
-import java.io.OutputStream;
-
 import static java.lang.String.format;
 
-public class DeleteHandler implements HttpHandler {
+public class DeleteHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(PostHandler.class);
 
     public void handle(HttpExchange httpExchange) {
@@ -18,26 +16,17 @@ public class DeleteHandler implements HttpHandler {
         try {
             String response = "was deleted tuple";
             int status = 200;
-
             new CrudOperationMongoDB().delete(httpExchange.getRequestHeaders().get("firstname").get(0));
-
-            httpExchange.sendResponseHeaders(status, response.length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(response.getBytes());
-            os.close();
-
+            sendRNS(httpExchange, response, status);
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                String msg = "SERVER ERROR";
-                httpExchange.sendResponseHeaders(500, msg.length());
-                OutputStream os = httpExchange.getResponseBody();
-                os.write(msg.getBytes(), 0, msg.length());
-                os.close();
+                sendRNS(httpExchange, "SERVER ERROR", 500);
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
     }
+
 }

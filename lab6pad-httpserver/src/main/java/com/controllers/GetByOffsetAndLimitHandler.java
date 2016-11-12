@@ -8,14 +8,13 @@ import com.sun.net.httpserver.HttpHandler;
 import com.util.JSONUtil;
 import org.apache.log4j.Logger;
 
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
 
-public class GetByOffsetAndLimitHandler implements HttpHandler {
+public class GetByOffsetAndLimitHandler extends AbstractServerController implements HttpHandler {
     private static final Logger LOGGER = Logger.getLogger(GetByOffsetAndLimitHandler.class);
 
     public void handle(HttpExchange httpExchange) {
@@ -38,24 +37,16 @@ public class GetByOffsetAndLimitHandler implements HttpHandler {
 
             List<Empl> empls = new CrudOperationMongoDB().findOffsetLimit(values);
 
-            String rns = JSONUtil.getJSONStringfromJAVAObject(empls);
-            httpExchange.sendResponseHeaders(200, rns.length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(rns.getBytes(), 0, rns.length());
-            os.close();
+            String response = JSONUtil.getJSONStringfromJAVAObject(empls);
+            sendRNS(httpExchange, response, 200);
         } catch (Exception ex) {
             ex.printStackTrace();
             try {
                 ex.printStackTrace();
-                String msg = "SERVER ERROR";
-                httpExchange.sendResponseHeaders(500, msg.length());
-                OutputStream os = httpExchange.getResponseBody();
-                os.write(msg.getBytes(), 0, msg.length());
-                os.close();
+                sendRNS(httpExchange, "SERVER ERROR", 500);
             } catch (Exception ex1) {
                 ex.printStackTrace();
             }
         }
-
     }
 }
