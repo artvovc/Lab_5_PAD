@@ -11,6 +11,7 @@
     <modules>
         <module>lab6pad-httpserver</module>
         <module>lab6pad-util</module>
+        <module>lab6pad-database</module>
     </modules>
 
     <properties>
