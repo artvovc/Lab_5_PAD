@@ -19,14 +19,6 @@ public class Empl {
     public Empl() {
     }
 
-    public Empl(String firstname, String lastname, Integer age, Integer salary, Long createdDate) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.age = age;
-        this.salary = salary;
-        this.createdDate = createdDate;
-    }
-
     public Empl(Document document) {
         this.firstname = document.getString("firstname");
         this.lastname = document.getString("lastname");

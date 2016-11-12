@@ -8,17 +8,17 @@ import java.io.IOException;
 
 
 public class JSONUtil {
-    private static ObjectMapper objectMapper = new ObjectMapper();
+    private static ObjectMapper OBJECTMAPPER = new ObjectMapper();
 
     public static String getJSONStringfromJAVAObject(Object obj) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(obj);
+        return OBJECTMAPPER.writeValueAsString(obj);
     }
 
     public static Object getJAVAObjectfromJSONString(String json, Class klass) throws IOException {
-        return objectMapper.readValue(json, klass);
+        return OBJECTMAPPER.readValue(json, klass);
     }
 
     public static Object getJAVAObjectfromJSONStringList(String json, TypeReference<?> typeReference) throws IOException {
-        return objectMapper.readValue(json, typeReference);
+        return OBJECTMAPPER.readValue(json, typeReference);
     }
 }

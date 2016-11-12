@@ -17,18 +17,21 @@ import java.util.Map;
 
 public class CrudOperationMongoDB {
 
+    private static final String DATABASE = "lab6pad";
+    private static final String COLLECTION = "pad";
+
     public void insertOne(Empl empl){
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("lab6pad");
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("pad");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE);
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(COLLECTION);
 
         mongoCollection.insertOne(empl.getDocument());
     }
 
     public void findOneAndReplace(HttpExchange httpExchange, Empl empl){
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("lab6pad");
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("pad");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE);
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(COLLECTION);
 
         mongoCollection.findOneAndReplace(
                 new BsonDocument("firstname", new BsonString(httpExchange.getRequestHeaders().get("firstname").get(0))),
@@ -38,8 +41,8 @@ public class CrudOperationMongoDB {
 
     public void delete(String firstname){
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("lab6pad");
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("pad");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE);
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(COLLECTION);
 
         mongoCollection.deleteOne(
                 new BsonDocument("firstname", new BsonString(firstname))
@@ -49,8 +52,8 @@ public class CrudOperationMongoDB {
     public List<Empl> find(){
         List<Empl> empls = new ArrayList<>();
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("lab6pad");
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("pad");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE);
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(COLLECTION);
 
         FindIterable<Document> datas = mongoCollection.find();
         datas.forEach((Block<? super Document>) document -> {
@@ -63,8 +66,8 @@ public class CrudOperationMongoDB {
     public List<Empl> findOffsetLimit(Map<String, Integer> values) {
         List<Empl> empls = new ArrayList<>();
         MongoClient mongoClient = new MongoClient();
-        MongoDatabase mongoDatabase = mongoClient.getDatabase("lab6pad");
-        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection("pad");
+        MongoDatabase mongoDatabase = mongoClient.getDatabase(DATABASE);
+        MongoCollection<Document> mongoCollection = mongoDatabase.getCollection(COLLECTION);
 
         FindIterable<Document> datas = mongoCollection.find().skip(values.get("offset")).limit(values.get("limit"));
         datas.forEach((Block<? super Document>) document -> {
