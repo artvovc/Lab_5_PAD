@@ -6,12 +6,19 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.util.JSONUtil;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import static java.lang.String.format;
 
@@ -36,12 +43,24 @@ public class GetProxyByOffsetAndLimitHandler implements HttpHandler {
                 values.put(varAndValue[0], Integer.parseInt(varAndValue[1]));
             }
 
-            List<Empl> empls = new CrudOperationMongoDB().findOffsetLimit(values);
+            String url = format("http://localhost:%d/employee?%s", (9000 + new Random().nextInt(2)),
+                    httpExchange.getRequestURI().getQuery());
+            CloseableHttpClient client = HttpClients.createDefault();
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.setHeader("Accept", "application/json");
+            httpGet.setHeader("Content-type", "application/json");
+            CloseableHttpResponse closeableHttpResponse = client.execute(httpGet);
 
-            String rns = JSONUtil.getJSONStringfromJAVAObject(empls);
-            httpExchange.sendResponseHeaders(200, rns.length());
+            StringWriter writer = new StringWriter();
+            IOUtils.copy(closeableHttpResponse.getEntity().getContent(), writer, "UTF-8");
+            String response = writer.toString();
+
+            client.close();
+
+            int status = closeableHttpResponse.getStatusLine().getStatusCode();
+            httpExchange.sendResponseHeaders(status, response.length());
             OutputStream os = httpExchange.getResponseBody();
-            os.write(rns.getBytes(), 0, rns.length());
+            os.write(response.getBytes());
             os.close();
         } catch (Exception ex) {
             ex.printStackTrace();
