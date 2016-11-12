@@ -12,6 +12,7 @@
         <module>lab6pad-httpserver</module>
         <module>lab6pad-util</module>
         <module>lab6pad-database</module>
+        <module>lab6pad-proxy</module>
     </modules>
 
     <properties>
@@ -24,6 +25,7 @@
         <org.slf4j.version>1.7.21</org.slf4j.version>
         <log4j.version>1.2.17</log4j.version>
         <mongo-java-driver.version>3.3.0</mongo-java-driver.version>
+        <httpclient.version>4.5.1</httpclient.version>
     </properties>
 
     <dependencyManagement>
@@ -52,6 +54,11 @@
                 <groupId>org.mongodb</groupId>
                 <artifactId>mongo-java-driver</artifactId>
                 <version>${mongo-java-driver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

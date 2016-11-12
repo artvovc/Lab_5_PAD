@@ -10,7 +10,7 @@ import static java.lang.String.format;
 
 public class CustomHttpServer {
 
-    private static final int PORT = 9000;
+    private static final int PORT = 9001;
 
     private static final Logger LOGGER = Logger.getLogger(CustomHttpServer.class);
 
