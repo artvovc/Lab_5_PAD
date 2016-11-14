@@ -7,6 +7,7 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import org.apache.log4j.Logger;
+import redis.clients.jedis.Jedis;
 
 import java.util.Objects;
 
@@ -30,13 +31,20 @@ public class GetProxyHandler extends AbstractProxyController implements HttpHand
 
             ReturnObject returnObject = new OperationHttpClient().find();
 
-            if (!Objects.equals(returnObject.getRns(), rns.getRns())) {
-                rns = new ReturnObject(returnObject.getStatus(), returnObject.getRns());
+            Jedis jedis = new Jedis("localhost");
+
+            if (!Objects.equals(jedis.get("data"), returnObject.getRns())) {
+                jedis.setex("data", 10, returnObject.getRns());
                 h.add("FromProxy", "no");
                 sendRNS(httpExchange, returnObject);
             } else {
                 h.add("FromProxy", "yes");
-                sendRNS(httpExchange, rns);
+                if (jedis.exists("data"))
+                    sendRNS(httpExchange, new ReturnObject(200, jedis.get("data")));
+                else {
+                    h.add("FromProxy", "no");
+                    sendRNS(httpExchange, returnObject);
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
